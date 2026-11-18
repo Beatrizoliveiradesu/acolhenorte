@@ -1,5 +1,10 @@
 import React from 'react';
-import { HeartHandshake, MapPin, Phone, Clock } from 'lucide-react';
+import { MapPin, Phone, Clock, Shield } from 'lucide-react';
+import {
+  LOGO_ACOLHE_NORTE,
+  WHATSAPP_OFICIAL_FORMATADO,
+  buildOfficialWhatsAppUrl,
+} from '../config';
 
 export default function Footer({ onNavigate }) {
   const go = (page) => {
@@ -7,16 +12,32 @@ export default function Footer({ onNavigate }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const footerWhatsappUrl = buildOfficialWhatsAppUrl(
+    'Olá, equipe *Acolhe Norte*! Gostaria de informações sobre cuidadores de idosos em Manaus.'
+  );
+
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.85rem' }}>
-              <span className="brand-icon" style={{ width: 36, height: 36, borderRadius: 10 }}>
-                <HeartHandshake size={20} />
-              </span>
-              <strong style={{ fontSize: '1.15rem', color: '#ffffff' }}>Acolhe Norte</strong>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.9rem' }}>
+              <img
+                src={LOGO_ACOLHE_NORTE}
+                alt="Acolhe Norte"
+                width={48}
+                height={48}
+                className="footer-logo-img"
+                style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 12, flexShrink: 0 }}
+              />
+              <div>
+                <strong style={{ fontSize: '1.18rem', color: '#ffffff', display: 'block' }}>
+                  Acolhe Norte
+                </strong>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.72)' }}>
+                  Cuidado Humanizado para Idosos
+                </span>
+              </div>
             </div>
             <p style={{ fontSize: '0.9rem', maxWidth: '380px', color: 'rgba(255,255,255,0.78)' }}>
               Conectamos famílias de Manaus e da Região Norte a cuidadores de idosos qualificados,
@@ -42,9 +63,20 @@ export default function Footer({ onNavigate }) {
                   Cadastrar Perfil Profissional (Sou Cuidador)
                 </button>
               </li>
-              <li>
-                <button type="button" onClick={() => go('admin')}>
-                  Painel Administrativo
+              <li style={{ marginTop: '0.35rem' }}>
+                <button
+                  type="button"
+                  onClick={() => go('admin')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    fontSize: '0.82rem',
+                    color: 'rgba(255,255,255,0.6)',
+                  }}
+                >
+                  <Shield size={13} />
+                  Painel Administrativo (Acesso Restrito)
                 </button>
               </li>
             </ul>
@@ -61,9 +93,23 @@ export default function Footer({ onNavigate }) {
                 <Clock size={16} color="#d4af37" />
                 Plantões 12x36, Diárias, Diurno e Noturno
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
-                <Phone size={16} color="#d4af37" />
-                Central Acolhe Norte: (92) 99100-0000
+              <li>
+                <a
+                  href={footerWhatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.9rem',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Phone size={16} color="#d4af37" />
+                  Central WhatsApp: {WHATSAPP_OFICIAL_FORMATADO}
+                </a>
               </li>
             </ul>
           </div>

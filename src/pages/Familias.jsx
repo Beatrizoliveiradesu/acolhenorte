@@ -6,10 +6,12 @@ import {
   ShieldCheck,
   Clock,
   Send,
+  Phone,
 } from 'lucide-react';
-import { buildWhatsAppUrl, formatPhoneMask } from '../data/initialCaregivers';
+import { formatPhoneMask } from '../data/initialCaregivers';
+import { WHATSAPP_OFICIAL_FORMATADO, buildOfficialWhatsAppUrl } from '../config';
 
-const BAIRROS_MANAUS = [
+export const BAIRROS_MANAUS = [
   'Adrianópolis',
   'Aleixo',
   'Alvorada',
@@ -30,7 +32,7 @@ const BAIRROS_MANAUS = [
   'Tarumã',
 ];
 
-const NIVEIS_CUIDADO = [
+export const NIVEIS_CUIDADO = [
   'Alzheimer / Demências',
   'Mobilidade Reduzida / Prevenção de Quedas',
   'Pós-operatório / Recuperação Hospitalar',
@@ -38,23 +40,21 @@ const NIVEIS_CUIDADO = [
   'Acamado / Alta Complexidade (Sonda, Curativos)',
 ];
 
-const TURNOS = [
+export const TURNOS_FAMILIA = [
   'Plantão 12x36 (Diurno)',
   'Plantão 12x36 (Noturno)',
   'Diurno (Segunda a Sexta)',
   'Noturno',
-  'Diárias Avulsas / Fim de Semana',
+  'Diárias Avulsas / Hospitalar',
   'Integral / Acompanhamento Contínuo',
 ];
-
-const CENTRAL_WHATSAPP = '92991000000';
 
 export default function Familias({ onAddRequest, preselectedCaregiver, onClearPreselected }) {
   const [formData, setFormData] = useState({
     responsavel: '',
     bairro: '',
     nivelCuidado: NIVEIS_CUIDADO[0],
-    turno: preselectedCaregiver?.turno || TURNOS[0],
+    turno: preselectedCaregiver?.turno || TURNOS_FAMILIA[0],
     whatsapp: '',
     observacoes: preselectedCaregiver
       ? `Interesse inicial no perfil de: ${preselectedCaregiver.nome}`
@@ -82,6 +82,8 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
       turno: formData.turno,
       whatsapp: formData.whatsapp.trim(),
       observacoes: formData.observacoes.trim(),
+      status: 'Novo',
+      isDemo: false,
       criadoEm: new Date().toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
@@ -102,7 +104,7 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
       responsavel: '',
       bairro: '',
       nivelCuidado: NIVEIS_CUIDADO[0],
-      turno: TURNOS[0],
+      turno: TURNOS_FAMILIA[0],
       whatsapp: '',
       observacoes: '',
     });
@@ -125,7 +127,7 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
       .filter(Boolean)
       .join('\n');
 
-    return buildWhatsAppUrl(CENTRAL_WHATSAPP, resumo);
+    return buildOfficialWhatsAppUrl(resumo);
   };
 
   return (
@@ -152,7 +154,7 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
                 <p>
                   Recebemos o pedido de <strong>{ultimoPedido.responsavel}</strong> para o bairro{' '}
                   <strong>{ultimoPedido.bairro}</strong> ({ultimoPedido.nivelCuidado} •{' '}
-                  {ultimoPedido.turno}). Seus dados já estão salvos com segurança.
+                  {ultimoPedido.turno}). Nossa equipe entrará em contato em breve.
                 </p>
                 <div className="success-actions">
                   <a
@@ -248,7 +250,7 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
                   value={formData.turno}
                   onChange={handleChange}
                 >
-                  {TURNOS.map((t) => (
+                  {TURNOS_FAMILIA.map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
@@ -319,10 +321,10 @@ export default function Familias({ onAddRequest, preselectedCaregiver, onClearPr
                 </span>
               </li>
               <li>
-                <MessageCircle size={18} />
+                <Phone size={18} />
                 <span>
-                  <strong>Atendimento Direto:</strong> Após enviar o formulário, você também pode
-                  encaminhar o resumo pronto direto no WhatsApp com 1 clique.
+                  <strong>Central Oficial Acolhe Norte:</strong> Fale também direto pelo WhatsApp{' '}
+                  <strong>{WHATSAPP_OFICIAL_FORMATADO}</strong> para dúvidas ou plantões urgentes.
                 </span>
               </li>
             </ul>

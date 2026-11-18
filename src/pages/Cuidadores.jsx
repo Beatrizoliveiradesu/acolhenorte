@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { CheckCircle2, UserPlus, Sparkles, Award, MapPin, Eye } from 'lucide-react';
+import {
+  CheckCircle2,
+  UserPlus,
+  Sparkles,
+  Award,
+  MapPin,
+  ShieldCheck,
+  MessageCircle,
+} from 'lucide-react';
 import { formatPhoneMask } from '../data/initialCaregivers';
+import { WHATSAPP_OFICIAL_FORMATADO, buildOfficialWhatsAppUrl } from '../config';
 
 const ESPECIALIDADES_OPCOES = [
   'Alzheimer e Demências',
@@ -77,6 +86,7 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
       whatsapp: formData.whatsapp.trim(),
       verificado: true,
       destaque: true,
+      status: 'pendente',
       criadoEm: new Date().toLocaleDateString('pt-BR'),
     };
 
@@ -95,14 +105,21 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const gerarLinkConfirmacaoTriagem = (cuidador) => {
+    if (!cuidador) return '#';
+    return buildOfficialWhatsAppUrl(
+      `Olá, equipe *Acolhe Norte*! Acabei de enviar meu cadastro profissional como cuidador(a): *${cuidador.nome}* (${cuidador.turno} • Bairros: ${cuidador.bairros}). Gostaria de agilizar minha triagem e envio de certificados!`
+    );
+  };
+
   return (
     <div>
       <section className="page-banner">
         <div className="container">
           <h1>Sou Cuidador — Cadastro Profissional</h1>
           <p>
-            Faça parte da rede Acolhe Norte em Manaus e Região Norte. Divulgue seu perfil na nossa
-            vitrine e conecte-se a famílias que valorizam o cuidado humanizado.
+            Faça parte da rede Acolhe Norte em Manaus e Região Norte. Envie seu cadastro para nossa
+            triagem humanizada e conecte-se a famílias da sua região.
           </p>
         </div>
       </section>
@@ -114,27 +131,29 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
               <div className="success-box" role="status">
                 <div className="success-box-header">
                   <CheckCircle2 size={22} color="#1b4332" />
-                  <span>Cadastro concluído! Seu perfil já está na Vitrine!</span>
+                  <span>Cadastro recebido! Seu perfil está Aguardando Triagem.</span>
                 </div>
                 <p>
-                  Parabéns, <strong>{perfilCriado.nome}</strong>! Seu perfil profissional foi salvo
-                  e adicionado automaticamente à vitrine de Cuidadores em Destaque na página inicial.
+                  Obrigado, <strong>{perfilCriado.nome}</strong>! Por segurança das famílias, todo
+                  novo cadastro passa pela validação da coordenação Acolhe Norte antes de ser
+                  exibido na vitrine pública da página inicial.
                 </p>
                 <div className="success-actions">
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => onNavigate('home')}
+                  <a
+                    href={gerarLinkConfirmacaoTriagem(perfilCriado)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-whatsapp btn-sm"
                   >
-                    <Eye size={16} />
-                    Ver meu perfil na Vitrine da Home
-                  </button>
+                    <MessageCircle size={16} />
+                    Enviar certificados no WhatsApp ({WHATSAPP_OFICIAL_FORMATADO})
+                  </a>
                   <button
                     type="button"
                     className="btn btn-outline-green btn-sm"
-                    onClick={() => setPerfilCriado(null)}
+                    onClick={() => onNavigate('home')}
                   >
-                    Cadastrar outro profissional
+                    Voltar ao Início
                   </button>
                 </div>
               </div>
@@ -144,7 +163,7 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
               Perfil Profissional do Cuidador
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
-              Preencha suas informações para aparecer imediatamente na vitrine do Acolhe Norte.
+              Preencha suas informações para iniciar sua avaliação e ativação na vitrine Acolhe Norte.
             </p>
 
             <form onSubmit={handleSubmit} className="form-grid">
@@ -273,7 +292,7 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
               <div className="form-group full-width" style={{ marginTop: '0.4rem' }}>
                 <button type="submit" className="btn btn-gold btn-block">
                   <UserPlus size={18} />
-                  Publicar Meu Perfil na Vitrine
+                  Enviar Cadastro para Triagem
                 </button>
               </div>
             </form>
@@ -282,28 +301,28 @@ export default function Cuidadores({ onAddCaregiver, onNavigate }) {
           <aside className="info-aside">
             <h3>
               <Sparkles size={20} color="#1b4332" />
-              Vantagens para Cuidadores
+              Como Funciona a Triagem
             </h3>
             <ul className="info-list">
               <li>
                 <Award size={18} />
                 <span>
-                  <strong>Valorização Profissional:</strong> Destaque seus cursos, certificações e
-                  experiência em geriatria ou enfermagem.
+                  <strong>1. Envio do Perfil:</strong> Informe sua formação, experiência e turnos de
+                  preferência pelo formulário.
+                </span>
+              </li>
+              <li>
+                <ShieldCheck size={18} />
+                <span>
+                  <strong>2. Validação Acolhe Norte:</strong> Nossa coordenação confere certificados
+                  e referências profissionais ({WHATSAPP_OFICIAL_FORMATADO}).
                 </span>
               </li>
               <li>
                 <MapPin size={18} />
                 <span>
-                  <strong>Atue Perto de Casa:</strong> Informe exatamente os bairros e zonas de
-                  Manaus onde prefere realizar seus plantões.
-                </span>
-              </li>
-              <li>
-                <CheckCircle2 size={18} />
-                <span>
-                  <strong>Visibilidade Imediata:</strong> Assim que enviar o cadastro, seu card já
-                  fica ativo na página inicial para as famílias entrarem em contato.
+                  <strong>3. Destaque na Vitrine:</strong> Assim que aprovado, seu perfil aparece
+                  com selo verificado para famílias dos bairros que você escolheu.
                 </span>
               </li>
             </ul>

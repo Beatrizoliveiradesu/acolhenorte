@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import FloatingWhatsApp from './components/FloatingWhatsApp';
 import Home from './pages/Home';
 import Familias from './pages/Familias';
 import Cuidadores from './pages/Cuidadores';
 import Admin from './pages/Admin';
 import {
   INITIAL_CAREGIVERS,
+  INITIAL_DEMO_REQUESTS,
   loadCaregivers,
   saveCaregivers,
   loadFamilyRequests,
@@ -31,8 +33,20 @@ export default function App() {
     setCaregivers((prev) => [newCaregiver, ...prev]);
   };
 
+  const handleUpdateCaregiverStatus = (id, novoStatus) => {
+    setCaregivers((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: novoStatus } : item))
+    );
+  };
+
   const handleAddRequest = (newRequest) => {
     setFamilyRequests((prev) => [newRequest, ...prev]);
+  };
+
+  const handleUpdateRequestStatus = (id, novoStatus) => {
+    setFamilyRequests((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: novoStatus } : item))
+    );
   };
 
   const handleDeleteRequest = (id) => {
@@ -45,9 +59,19 @@ export default function App() {
 
   const handleResetDemoData = () => {
     setCaregivers((prev) => {
-      const existingIds = new Set(prev.map((c) => c.id));
+      const defaultMap = new Map(INITIAL_CAREGIVERS.map((c) => [c.id, c]));
+      const updatedExisting = prev.map((item) =>
+        defaultMap.has(item.id) ? { ...defaultMap.get(item.id), status: 'aprovado' } : item
+      );
+      const existingIds = new Set(updatedExisting.map((c) => c.id));
       const missingDefaults = INITIAL_CAREGIVERS.filter((c) => !existingIds.has(c.id));
-      return [...prev, ...missingDefaults];
+      return [...updatedExisting, ...missingDefaults];
+    });
+
+    setFamilyRequests((prev) => {
+      const existingIds = new Set(prev.map((r) => r.id));
+      const missingDemos = INITIAL_DEMO_REQUESTS.filter((r) => !existingIds.has(r.id));
+      return [...prev, ...missingDemos];
     });
   };
 
@@ -57,13 +81,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const isPublicPage = currentPage !== 'admin';
+
   return (
     <div className="app-shell">
-      <Navbar
-        currentPage={currentPage}
-        onNavigate={setCurrentPage}
-        requestsCount={familyRequests.length}
-      />
+      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
 
       <main className="main-content">
         {currentPage === 'home' && (
@@ -93,12 +115,18 @@ export default function App() {
           <Admin
             requests={familyRequests}
             caregivers={caregivers}
+            onAddRequest={handleAddRequest}
+            onUpdateRequestStatus={handleUpdateRequestStatus}
             onDeleteRequest={handleDeleteRequest}
+            onUpdateCaregiverStatus={handleUpdateCaregiverStatus}
             onDeleteCaregiver={handleDeleteCaregiver}
             onResetDemoData={handleResetDemoData}
+            onNavigate={setCurrentPage}
           />
         )}
       </main>
+
+      {isPublicPage && <FloatingWhatsApp />}
 
       <Footer onNavigate={setCurrentPage} />
     </div>
